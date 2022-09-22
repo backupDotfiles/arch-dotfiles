@@ -1,0 +1,9 @@
+configuration {
+  display-drun: "Run";
+  drun-display-format: "{icon} {name}";
+  font: "JetBrains Mono Nerd Font Regular 10";
+  modi: "drun";
+  show-icons: true;
+}
+
+@theme "themes/tokyo-night.rasi"

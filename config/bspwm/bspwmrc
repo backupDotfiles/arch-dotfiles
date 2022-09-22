@@ -1,0 +1,46 @@
+#! /usr/bin/sh
+
+primary_monitor = $(xrandr | awk '/ connected / {print $1}')
+
+# display
+xrandr --output --primary $primary_monitor --mode 1920x1080 &
+
+# compositor
+picom -f &
+
+# keybindings
+sxhkd &
+
+# polybar
+killall -q polybar
+polybar top &
+
+# cursor
+xsetroot -cursor_name left_ptr &
+
+# notify
+dunst &
+
+# wallpaper
+setbg &
+
+# monitors
+bspc monitor $primary_monitor -d  
+
+# bspwm config
+bspc config border_width         2
+bspc config window_gap           8
+
+bspc config split_ratio          0.50
+bspc config borderless_monocle   true
+bspc config gapless_monocle      true
+
+# bspwm rules
+bspc rule -a Alacritty desktop='^1' focus=on follow=on
+bspc rule -a brave-browser desktop='^2' focus=on follow=on
+bspc rule -a firefox desktop='^2' focus=on follow=on
+#state=floating 
+
+# bspwm colors
+bspc config normal_border_color   "#24283b"
+bspc config focused_border_color  "#c0caf5"
