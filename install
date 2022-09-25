@@ -36,10 +36,14 @@ ALTWHITE="#c0caf5"
 
 # Create home folders
 create_folders() {
-	mkdir "$H/Downloads $H/Pictures $H/Music"
+	folders=("Downloads" "Pictures" "Music")
+	for f in "${folders[@]}"
+	do
+		mkdir -p "$H/$f"
+	done
 }
 
-update_istall() {
+update_install() {
 	pkg=("neovim bspwm sxhkd alacritty picom rofi polybar dunst zsh xorg-xsetroot adwaita-icon-theme curl wget xwallpaper inetutils")
 	$P -Syu
 	echo "y" | $P -S $pkg
@@ -132,7 +136,7 @@ $SB
 
 # Workspaces
 name=1
-for m in `bspc query -M --names`;do
+for m in \`bspc query -M --names\`;do
   bspc monitor \$m -d "1" "2" "3"
   let name++
 done
@@ -218,7 +222,7 @@ foreground =               $FOREGROUND
 font-0 =                   $FONTFAMILY:style=Regular:pixelsize=12;2
 module-margin =            1
 modules-left =             bspwm window
-modules-right =            cpu memory eth date
+modules-right =            cpu memory eth wlan date
 cursor-click =             pointer
 wm-restack =               bspwm
 
@@ -264,6 +268,11 @@ inherit =                  network-base
 interface-type =           wired
 label-connected =          %ifname%
 
+[module/wlan]
+inherit =                  network-base
+interface-type =           wireless
+label-connected =          %ifname%
+
 [module/date]
 type =                     internal/date
 interval =                 1
@@ -286,7 +295,7 @@ set_zsh() {
 	if [[ $SHELL != "/usr/bin/zsh" ]]; then
 		chsh -s /usr/bin/zsh
 	fi
-	rm -rf .bashrc .bash_logout .bash_history
+	rm -rf .bashrc .bash_logout .bash_history .bash_profile
 	cat > "$C/zsh/.zshrc" <<- _EOF_
 # If not running interactively, don't do anything
 [[ \$- != *i* ]] && return
@@ -329,6 +338,8 @@ download_bg() {
 }
 
 main() {
+	create_folders
+	update_install
 	set_dotzprofile
 	set_xinitrc
 	set_alacritty
