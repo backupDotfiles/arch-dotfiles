@@ -313,7 +313,7 @@ autoload -Uz compinit
 compinit
 # End of lines added by compinstall
 
-PROMPT="> "
+PROMPT="%~ > "
 
 alias ls="ls --color=auto"
 alias la="ls -A"
