@@ -44,7 +44,7 @@ create_folders() {
 }
 
 update_install() {
-	pkg=("neovim bspwm sxhkd alacritty picom rofi polybar dunst zsh xorg-xsetroot adwaita-icon-theme curl wget xwallpaper inetutils")
+	pkg=("neovim bspwm sxhkd alacritty picom rofi polybar dunst zsh xorg-xsetroot firefox adwaita-icon-theme curl wget xwallpaper inetutils")
 	$P -Syu
 	echo "y" | $P -S $pkg
 }
@@ -102,7 +102,7 @@ font:
   italic:
     family: $FONTFAMILY
     style:  Italic
-  size:     11.0
+  size:     10.0
 
 colors:
   primary:
@@ -137,7 +137,7 @@ $SB
 # Workspaces
 name=1
 for m in \`bspc query -M --names\`;do
-  bspc monitor \$m -d "1" "2" "3"
+  bspc monitor \$m -d "" ""
   let name++
 done
 
@@ -152,6 +152,7 @@ bspc config normal_border_color   "$BACKGROUND"
 
 # Rules
 bspc rule -a Alacritty desktop="^1" follow=on focus=on
+bspc rule -a firefox desktop="^2" follow=on focus=on
 
 # Autostart
 killall -q picom bspc sxhkd polybar
@@ -219,7 +220,7 @@ radius =                   0
 padding =                  1
 background =               $BACKGROUND
 foreground =               $FOREGROUND
-font-0 =                   $FONTFAMILY:style=Regular:pixelsize=12;2
+font-0 =                   $FONTFAMILY:style=Regular:pixelsize=14;2
 module-margin =            1
 modules-left =             bspwm window
 modules-right =            cpu memory eth wlan date
@@ -230,8 +231,7 @@ wm-restack =               bspwm
 type =                     internal/xworkspaces
 label-active =             %name%
 label-active-padding =     1
-label-active-foreground =  $FOREGROUND
-label-active-background =  $BLUE
+label-active-foreground =  $BLUE
 label-occupied =           %name%
 label-occupied-padding =   1
 label-empty =              %name%
@@ -288,7 +288,90 @@ pseudo-transparency =      true
 
 #set_dunst() {}
 
-#set_rofi() {}
+set_rofi() {
+	mkdir -p "$C/rofi"
+	cat > "$C/rofi/config.rasi" <<- _EOF_
+configuration {
+  display-drun: "Run";
+  drun-display-format: "{icon} {name}";
+  font: "$FONTFAMILY Regular 10";
+  modi: "drun";
+  show-icons: true;
+}
+
+@theme "theme.rasi"
+	_EOF_
+	
+	cat > "$C/rofi/theme.rasi" <<- _EOF_
+* {
+  background-color: $BACKGROUND;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  spacing: 0;
+}
+
+window {
+  width: 45%;
+  border: 1;
+  border-color: $FOREGROUND;
+}
+
+element {
+  padding: 8 0;
+  text-color: $FOREGROUND;
+}
+
+element selected {
+  background-color: $FOREGROUND;
+  text-color: $BACKGROUND;
+}
+
+element-text {
+  background-color: inherit;
+  text-color: inherit;
+  vertical-align: 0.5;
+}
+
+element-icon {
+  padding: 0 4;
+  size: 30;
+}
+
+element-icon selected {
+  background-color: $FOREGROUND;
+}
+
+entry {
+  background-color: $BLACK;
+  padding: 12;
+  text-color: $FOREGROUND;
+}
+
+inputbar {
+  children: [prompt, entry];
+}
+
+listview {
+  background-color: $BACKGROUND;
+  padding: 8 12;
+  columns: 1;
+  lines: 8;
+}
+
+mainbox {
+  background-color: $BACKGROUND;
+  children: [inputbar, listview];
+}
+
+prompt {
+  background-color: $BLACK;
+  enabled: true;
+  padding: 12 0 0 12;
+  text-color: $FOREGROUND;
+}
+	_EOF_
+}
 
 set_zsh() {
 	mkdir -p "$C/zsh"
@@ -338,14 +421,15 @@ download_bg() {
 }
 
 main() {
-	create_folders
-	update_install
+	#create_folders
+	#update_install
 	set_dotzprofile
 	set_xinitrc
 	set_alacritty
 	set_bspwm
 	set_sxhkd
 	set_polybar
+	set_rofi
 	set_zsh
 	# download_fonts
 	# download_bg
